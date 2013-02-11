@@ -3,6 +3,14 @@ require 'fileutils'
 require 'digest/md5'
 include FileUtils::Verbose
 
+def syncDirectories(syncFrom, syncTo)
+  Dir.entries(syncFrom).each{|fileOrDir| 
+    if (fileOrDir != '.' && fileOrDir != '..') then
+      move_file_or_directory(syncFrom,syncTo,fileOrDir)
+    end
+  }  
+end
+
 def move_file_or_directory(syncFrom,syncTo,fileOrDir)
   fileAndDirectory = "#{syncFrom}#{fileOrDir}"
 
@@ -15,11 +23,7 @@ def move_file_or_directory(syncFrom,syncTo,fileOrDir)
       Dir.mkdir(syncToDir)
     end
 
-    Dir.entries(fileAndDirectory).each{|subFileOrDir| 
-      if (subFileOrDir != '.' && subFileOrDir != '..') then  
-        move_file_or_directory("#{fileAndDirectory}/","#{syncToDir}/",subFileOrDir)
-      end
-    }
+    syncDirectories("#{fileAndDirectory}/", "#{syncToDir}/")
   end
 end
 
@@ -50,7 +54,6 @@ def move_file (syncFrom,syncTo,fileName)
 end
 
 def copyFile(fileFrom,fileTo)
-  puts "Copying #{fileFrom} to #{fileTo}"
   cp(fileFrom,fileTo)
 end
 
@@ -75,9 +78,5 @@ syncTo = getAbsolutePath(syncTo)
 puts "Syncing from: #{syncFrom} to #{syncTo}"
 
 if(syncFrom != nil && syncTo != nil) then
-  Dir.entries(syncFrom).each{|fileOrDir| 
-    if (fileOrDir != '.' && fileOrDir != '..') then
-      move_file_or_directory(syncFrom,syncTo,fileOrDir)
-    end
-  }
+  syncDirectories(syncFrom,syncTo)
 end
