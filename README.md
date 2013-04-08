@@ -11,5 +11,5 @@ Ruby 1.9.3 recommended
 
 Sample Usage
 ============
-ruby merge_files testfrom/ testto/
+ruby merge_files -f testfrom/ -t testto/
 
